@@ -152,15 +152,15 @@
             @click="showAdvanced = !showAdvanced"
             class="w-full flex items-center justify-between px-5 py-4 text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors"
         >
-            <span class="flex items-center gap-2">
-                <svg class="h-4 w-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4"/></svg>
-                Advanced options
-                <span class="text-xs font-normal text-gray-400" x-show="!showAdvanced">
+            <span class="flex items-center gap-2 min-w-0">
+                <svg class="h-4 w-4 text-gray-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4"/></svg>
+                <span class="shrink-0">Advanced options</span>
+                <span class="text-xs font-normal text-gray-400 truncate" x-show="!showAdvanced">
                     — working hours currently <span x-text="pad(workStart) + ':00–' + pad(workEnd) + ':00'"></span>
                 </span>
             </span>
             <svg
-                class="h-4 w-4 text-gray-400 transition-transform duration-200"
+                class="h-4 w-4 text-gray-400 shrink-0 transition-transform duration-200"
                 :class="showAdvanced ? 'rotate-180' : ''"
                 fill="none" stroke="currentColor" viewBox="0 0 24 24"
             ><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
@@ -243,7 +243,7 @@
                                         'bg-gray-100 border border-gray-200': !cell.aWorking,
                                     }"
                                 >
-                                    <div class="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-2 py-1 bg-gray-900 text-white text-xs rounded whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-10">
+                                    <div class="absolute top-full left-1/2 -translate-x-1/2 mt-1 px-2 py-1 bg-gray-900 text-white text-xs rounded whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-10">
                                         <span x-text="pad(cell.h) + ':00'"></span>
                                     </div>
                                 </div>
@@ -279,19 +279,20 @@
                             <div x-text="cityB?.name?.split(',')[0]"></div>
                         </div>
                         <div class="flex-1 relative" style="min-height: 2.5rem;">
-                            <template x-for="cell in hours" :key="'labels-' + cell.h">
+                            {{-- Tick marks at 00, 06, 12, 18 --}}
+                            <template x-for="cell in hours.filter(c => c.h % 6 === 0)" :key="'tick-' + cell.h">
                                 <div
                                     class="absolute top-0 text-center"
-                                    x-show="cell.h % 6 === 0"
-                                    :style="'left: calc(' + (cell.h / 24 * 100) + '% )'"
+                                    :style="'left: ' + (cell.h / 24 * 100) + '%'"
                                 >
                                     <div class="text-xs text-gray-400 leading-tight" x-text="pad(cell.h)"></div>
                                     <div class="text-xs text-gray-300 leading-tight" x-text="pad(cell.bHour)"></div>
                                 </div>
                             </template>
-                            {{-- 24:00 / end label --}}
-                            <div class="absolute top-0 right-0 text-center">
+                            {{-- 24:00 end label — with City B equivalent --}}
+                            <div class="absolute top-0 right-0 text-right">
                                 <div class="text-xs text-gray-400 leading-tight">24</div>
+                                <div class="text-xs text-gray-300 leading-tight" x-text="hours.length ? pad((hours[23].bHour + 1) % 24) : ''"></div>
                             </div>
                         </div>
                     </div>
